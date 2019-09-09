@@ -20,6 +20,11 @@ ConfigureGeneral::ConfigureGeneral(QWidget* parent)
     ui->updateBox->setVisible(UISettings::values.updater_found);
     connect(ui->button_reset_defaults, &QPushButton::clicked, this,
             &ConfigureGeneral::ResetDefaults);
+
+    ui->label_is_n3ds_true->setVisible(Settings::values.is_new_3ds);
+    ui->label_GDB_debug->setVisible(Settings::values.use_gdbstub);
+    bool messages_to_show = Settings::values.use_gdbstub || Settings::values.is_new_3ds;
+    ui->info_messages_group->setVisible(messages_to_show);
 }
 
 ConfigureGeneral::~ConfigureGeneral() = default;

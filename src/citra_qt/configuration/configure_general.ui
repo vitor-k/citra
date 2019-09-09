@@ -138,6 +138,29 @@
        </layout>
       </widget>
      </item>
+     <item>
+      <widget class="QGroupBox" name="info_messages_group">
+       <property name="title">
+        <string>Informational Messages</string>
+       </property>
+       <layout class="QVBoxLayout">
+        <item>
+         <widget class="QLabel" name="label_is_n3ds_true">
+          <property name="text">
+           <string>The flag System_IsNew3ds is set to true. This may cause problems. Reset settings to fix this.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_GDB_debug">
+          <property name="text">
+           <string>GDB Stub debugging is on. This may cause problems with starting games.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item alignment="Qt::AlignRight">
       <widget class="QPushButton" name="button_reset_defaults">
        <property name="text">
