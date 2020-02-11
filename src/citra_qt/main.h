@@ -217,6 +217,7 @@ private:
     void UpdateWindowTitle();
     void RetranslateStatusBar();
     void InstallCIA(QStringList filepaths);
+    void HideMouseCursor();
 
     Ui::MainWindow ui;
 
@@ -245,6 +246,7 @@ private:
     QString game_path;
 
     bool auto_paused = false;
+    QTimer mouse_hide_timer;
 
     // Movie
     bool movie_record_on_start = false;
@@ -286,6 +288,7 @@ protected:
     void dropEvent(QDropEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dragMoveEvent(QDragMoveEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 };
 
 Q_DECLARE_METATYPE(std::size_t);
