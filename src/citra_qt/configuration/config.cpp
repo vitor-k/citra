@@ -518,6 +518,7 @@ void Config::ReadUIValues() {
     UISettings::values.show_console = ReadSetting(QStringLiteral("showConsole"), false).toBool();
     UISettings::values.pause_when_in_background =
         ReadSetting(QStringLiteral("pauseWhenInBackground"), false).toBool();
+    UISettings::values.hide_mouse = ReadSetting(QStringLiteral("hideInactiveMouse"), false).toBool();
 
     qt_config->endGroup();
 }
@@ -942,6 +943,7 @@ void Config::SaveUIValues() {
     WriteSetting(QStringLiteral("showConsole"), UISettings::values.show_console, false);
     WriteSetting(QStringLiteral("pauseWhenInBackground"),
                  UISettings::values.pause_when_in_background, false);
+    WriteSetting(QStringLiteral("hideInactiveMouse"), UISettings::values.hide_mouse, false);
 
     qt_config->endGroup();
 }
