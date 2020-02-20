@@ -269,6 +269,7 @@ ConfigureInput::ConfigureInput(QWidget* parent)
 
     ui->buttonDelete->setEnabled(ui->profile->count() > 1);
 
+    connect(ui->buttonAutoMap, &QPushButton::clicked, this, &ConfigureInput::AutoMap);
     connect(ui->buttonClearAll, &QPushButton::clicked, this, &ConfigureInput::ClearAll);
     connect(ui->buttonRestoreDefaults, &QPushButton::clicked, this,
             &ConfigureInput::RestoreDefaults);
@@ -425,6 +426,43 @@ void ConfigureInput::UpdateButtonLabels() {
     }
 
     EmitInputKeysChanged();
+}
+
+void ConfigureInput::MapFromButton(const Common::ParamPackage& params) {
+    Common::ParamPackage aux_param;
+    for (int button_id = 0; button_id < Settings::NativeButton::NumButtons; button_id++) {
+        aux_param = InputCommon::GetSDLControllerButtonBindByGUID(params.Get("guid", "0"),
+                                                                  params.Get("port", 0), button_id);
+        if (aux_param.Has("engine")) {
+            buttons_param[button_id] = aux_param;
+        }
+    }
+    for (int analog_id = 0; analog_id < Settings::NativeAnalog::NumAnalogs; analog_id++) {
+        aux_param = InputCommon::GetSDLControllerAnalogBindByGUID(params.Get("guid", "0"),
+                                                                  params.Get("port", 0), analog_id);
+        if (aux_param.Has("engine")) {
+            analogs_param[analog_id] = aux_param;
+        }
+    }
+}
+
+void ConfigureInput::AutoMap() {
+    if (QMessageBox::information(this, tr("Information"),
+                                 tr("After pressing OK, press any button on your joystick"),
+                                 QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
+        input_setter = [=](const Common::ParamPackage& params) {
+            MapFromButton(params);
+            ApplyConfiguration();
+            Settings::SaveProfile(ui->profile->currentIndex());
+        };
+        device_pollers = InputCommon::Polling::GetPollers(InputCommon::Polling::DeviceType::Button);
+        want_keyboard_keys = false;
+        for (auto& poller : device_pollers) {
+            poller->Start();
+        }
+        timeout_timer->start(5000); // Cancel after 5 seconds
+        poll_timer->start(200);     // Check for new inputs every 200ms
+    }
 }
 
 void ConfigureInput::HandleClick(QPushButton* button,

@@ -48,6 +48,27 @@ static int SDLEventWatcher(void* userdata, SDL_Event* event) {
     return 0;
 }
 
+static const std::array<SDL_GameControllerButton, Settings::NativeButton::NumButtons>
+    xinput_to_3ds_mapping = {{
+        SDL_CONTROLLER_BUTTON_B,
+        SDL_CONTROLLER_BUTTON_A,
+        SDL_CONTROLLER_BUTTON_Y,
+        SDL_CONTROLLER_BUTTON_X,
+        SDL_CONTROLLER_BUTTON_DPAD_UP,
+        SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+        SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+        SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+        SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+        SDL_CONTROLLER_BUTTON_START,
+        SDL_CONTROLLER_BUTTON_BACK,
+        SDL_CONTROLLER_BUTTON_INVALID,
+        SDL_CONTROLLER_BUTTON_INVALID,
+        SDL_CONTROLLER_BUTTON_INVALID,
+        SDL_CONTROLLER_BUTTON_INVALID,
+        SDL_CONTROLLER_BUTTON_GUIDE,
+    }};
+
 class SDLJoystick {
 public:
     SDLJoystick(std::string guid_, int port_, SDL_Joystick* joystick,
@@ -124,6 +145,10 @@ public:
             std::unique_ptr<SDL_Joystick, decltype(&SDL_JoystickClose)>(joystick, deleter);
     }
 
+    SDL_GameController* GetGameController() {
+        return SDL_GameControllerFromInstanceID(SDL_JoystickInstanceID(sdl_joystick.get()));
+    }
+
 private:
     struct State {
         std::unordered_map<int, bool> buttons;
@@ -191,6 +216,106 @@ std::shared_ptr<SDLJoystick> SDLState::GetSDLJoystickBySDLID(SDL_JoystickID sdl_
     }
     auto joystick = std::make_shared<SDLJoystick>(guid, 0, sdl_joystick);
     return joystick_map[guid].emplace_back(std::move(joystick));
+}
+
+Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
+    const std::string& guid, int port, Settings::NativeButton::Values button) {
+    Common::ParamPackage params({{"engine", "sdl"}});
+    params.Set("guid", guid);
+    params.Set("port", port);
+    auto joy = GetSDLJoystickByGUID(guid, port);
+    SDL_GameController* controller = joy->GetGameController();
+    SDL_GameControllerButtonBind button_bind;
+
+    if (controller == NULL) {
+        LOG_INFO(Input, "failed to open controller {}, {}", guid, SDL_GetError());
+        return {{}};
+    }
+
+    auto mapped_button = xinput_to_3ds_mapping[static_cast<int>(button)];
+    if (mapped_button == SDL_CONTROLLER_BUTTON_INVALID) {
+        if (button == Settings::NativeButton::Values::ZL) {
+            button_bind =
+                SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+        } else if (button == Settings::NativeButton::Values::ZR) {
+            button_bind =
+                SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+        } else {
+            return {{}};
+        }
+    } else {
+        button_bind = SDL_GameControllerGetBindForButton(controller, mapped_button);
+    }
+    switch (button_bind.bindType) {
+    case SDL_CONTROLLER_BINDTYPE_BUTTON:
+        params.Set("button", button_bind.value.button);
+        break;
+    case SDL_CONTROLLER_BINDTYPE_HAT:
+        params.Set("hat", button_bind.value.hat.hat);
+        switch (button_bind.value.hat.hat_mask) {
+        case SDL_HAT_UP:
+            params.Set("direction", "up");
+            break;
+        case SDL_HAT_DOWN:
+            params.Set("direction", "down");
+            break;
+        case SDL_HAT_LEFT:
+            params.Set("direction", "left");
+            break;
+        case SDL_HAT_RIGHT:
+            params.Set("direction", "right");
+            break;
+        default:
+            return {{}};
+        }
+        break;
+    case SDL_CONTROLLER_BINDTYPE_AXIS:
+        params.Set("axis", button_bind.value.axis);
+        params.Set("direction", 0.5f);
+        break;
+    default:
+        LOG_WARNING(Input, "unknown SDL bind type {}", button_bind.bindType);
+        return {{}};
+        break;
+    }
+
+    return params;
+}
+
+Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
+    const std::string& guid, int port, Settings::NativeAnalog::Values analog) {
+    Common::ParamPackage params({{"engine", "sdl"}});
+    params.Set("guid", guid);
+    params.Set("port", port);
+    auto joy = GetSDLJoystickByGUID(guid, port);
+    SDL_GameController* controller = joy->GetGameController();
+    SDL_GameControllerButtonBind button_bind_x;
+    SDL_GameControllerButtonBind button_bind_y;
+
+    if (controller == NULL) {
+        return {{}};
+    }
+
+    if (analog == Settings::NativeAnalog::Values::CirclePad) {
+        button_bind_x = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+        button_bind_y = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+
+    } else if (analog == Settings::NativeAnalog::Values::CStick) {
+        button_bind_x = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
+        button_bind_y = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
+
+    } else {
+        LOG_WARNING(Input, "analog value out of range {}", analog);
+        return {{}};
+    }
+
+    if (button_bind_x.bindType == SDL_CONTROLLER_BINDTYPE_AXIS &&
+        button_bind_y.bindType == SDL_CONTROLLER_BINDTYPE_AXIS) {
+        params.Set("axis_x", button_bind_x.value.axis);
+        params.Set("axis_y", button_bind_y.value.axis);
+    }
+
+    return params;
 }
 
 void SDLState::InitJoystick(int joystick_index) {

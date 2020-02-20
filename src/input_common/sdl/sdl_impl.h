@@ -8,6 +8,7 @@
 #include <memory>
 #include <thread>
 #include "common/threadsafe_queue.h"
+#include "core/settings.h"
 #include "input_common/sdl/sdl.h"
 
 union SDL_Event;
@@ -33,6 +34,9 @@ public:
 
     std::shared_ptr<SDLJoystick> GetSDLJoystickBySDLID(SDL_JoystickID sdl_id);
     std::shared_ptr<SDLJoystick> GetSDLJoystickByGUID(const std::string& guid, int port);
+
+    Common::ParamPackage GetSDLControllerButtonBindByGUID(const std::string& guid, int port, Settings::NativeButton::Values button);
+    Common::ParamPackage GetSDLControllerAnalogBindByGUID(const std::string& guid, int port, Settings::NativeAnalog::Values analog);
 
     /// Get all DevicePoller that use the SDL backend for a specific device type
     Pollers GetPollers(Polling::DeviceType type) override;
