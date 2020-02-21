@@ -293,6 +293,7 @@ Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
     SDL_GameControllerButtonBind button_bind_y;
 
     if (controller == NULL) {
+        LOG_WARNING(Input, "failed to open controller {}", guid);
         return {{}};
     }
 
@@ -589,9 +590,9 @@ SDLState::SDLState() {
     RegisterFactory<AnalogDevice>("sdl", std::make_shared<SDLAnalogFactory>(*this));
 
     // If the frontend is going to manage the event loop, then we dont start one here
-    start_thread = !SDL_WasInit(SDL_INIT_JOYSTICK);
-    if (start_thread && SDL_Init(SDL_INIT_JOYSTICK) < 0) {
-        LOG_CRITICAL(Input, "SDL_Init(SDL_INIT_JOYSTICK) failed with: {}", SDL_GetError());
+    start_thread = !SDL_WasInit(SDL_INIT_GAMECONTROLLER);
+    if (start_thread && SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
+        LOG_CRITICAL(Input, "SDL_Init(SDL_INIT_GAMECONTROLLER) failed with: {}", SDL_GetError());
         return;
     }
     if (SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1") == SDL_FALSE) {
@@ -635,7 +636,7 @@ SDLState::~SDLState() {
     initialized = false;
     if (start_thread) {
         poll_thread.join();
-        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
     }
 }
 
