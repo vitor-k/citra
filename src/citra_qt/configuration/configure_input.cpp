@@ -430,11 +430,13 @@ void ConfigureInput::UpdateButtonLabels() {
 
 void ConfigureInput::MapFromButton(const Common::ParamPackage& params) {
     Common::ParamPackage aux_param;
+    bool mapped = false;
     for (int button_id = 0; button_id < Settings::NativeButton::NumButtons; button_id++) {
         aux_param = InputCommon::GetSDLControllerButtonBindByGUID(params.Get("guid", "0"),
                                                                   params.Get("port", 0), button_id);
         if (aux_param.Has("engine")) {
             buttons_param[button_id] = aux_param;
+            mapped = true;
         }
     }
     for (int analog_id = 0; analog_id < Settings::NativeAnalog::NumAnalogs; analog_id++) {
@@ -442,7 +444,13 @@ void ConfigureInput::MapFromButton(const Common::ParamPackage& params) {
                                                                   params.Get("port", 0), analog_id);
         if (aux_param.Has("engine")) {
             analogs_param[analog_id] = aux_param;
+            mapped = true;
         }
+    }
+    if (!mapped) {
+        QMessageBox::warning(
+            this, tr("Warning"),
+            tr("Auto mapping failed. Your controller may not have a corresponding mapping"));
     }
 }
 
