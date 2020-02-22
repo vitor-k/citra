@@ -69,11 +69,15 @@ constexpr std::array<SDL_GameControllerButton, Settings::NativeButton::NumButton
         SDL_CONTROLLER_BUTTON_GUIDE,
     }};
 
+struct SDLJoystickDeleter {
+    void operator()(SDL_Joystick* object) {
+        SDL_JoystickClose(object);
+    }
+};
 class SDLJoystick {
 public:
-    SDLJoystick(std::string guid_, int port_, SDL_Joystick* joystick,
-                decltype(&SDL_JoystickClose) deleter = &SDL_JoystickClose)
-        : guid{std::move(guid_)}, port{port_}, sdl_joystick{joystick, deleter} {}
+    SDLJoystick(std::string guid_, int port_, SDL_Joystick* joystick)
+        : guid{std::move(guid_)}, port{port_}, sdl_joystick{joystick} {}
 
     void SetButton(int button, bool value) {
         std::lock_guard lock{mutex};
@@ -139,10 +143,8 @@ public:
         return sdl_joystick.get();
     }
 
-    void SetSDLJoystick(SDL_Joystick* joystick,
-                        decltype(&SDL_JoystickClose) deleter = &SDL_JoystickClose) {
-        sdl_joystick =
-            std::unique_ptr<SDL_Joystick, decltype(&SDL_JoystickClose)>(joystick, deleter);
+    void SetSDLJoystick(SDL_Joystick* joystick) {
+        sdl_joystick = std::unique_ptr<SDL_Joystick, SDLJoystickDeleter>(joystick);
     }
 
     SDL_GameController* GetGameController() const {
@@ -157,15 +159,19 @@ private:
     } state;
     std::string guid;
     int port;
-    std::unique_ptr<SDL_Joystick, decltype(&SDL_JoystickClose)> sdl_joystick;
+    std::unique_ptr<SDL_Joystick, SDLJoystickDeleter> sdl_joystick;
     mutable std::mutex mutex;
 };
 
+struct SDLGameControllerDeleter {
+    void operator()(SDL_GameController* object) {
+        SDL_GameControllerClose(object);
+    }
+};
 class SDLGameController {
 public:
-    SDLGameController(std::string guid_, int port_, SDL_GameController* controller,
-                      decltype(&SDL_GameControllerClose) deleter = &SDL_GameControllerClose)
-        : guid{std::move(guid_)}, port{port_}, sdl_controller{controller, deleter} {}
+    SDLGameController(std::string guid_, int port_, SDL_GameController* controller)
+        : guid{std::move(guid_)}, port{port_}, sdl_controller{controller} {}
 
     /**
      * The guid of the joystick/controller
@@ -185,17 +191,14 @@ public:
         return sdl_controller.get();
     }
 
-    void SetSDLGameController(
-        SDL_GameController* controller,
-        decltype(&SDL_GameControllerClose) deleter = &SDL_GameControllerClose) {
-        sdl_controller = std::unique_ptr<SDL_GameController, decltype(&SDL_GameControllerClose)>(
-            controller, deleter);
+    void SetSDLGameController(SDL_GameController* controller) {
+        sdl_controller = std::unique_ptr<SDL_GameController, SDLGameControllerDeleter>(controller);
     }
 
 private:
     std::string guid;
     int port;
-    std::unique_ptr<SDL_GameController, decltype(&SDL_GameControllerClose)> sdl_controller;
+    std::unique_ptr<SDL_GameController, SDLGameControllerDeleter> sdl_controller;
 };
 
 /**
@@ -206,13 +209,13 @@ std::shared_ptr<SDLJoystick> SDLState::GetSDLJoystickByGUID(const std::string& g
     const auto it = joystick_map.find(guid);
     if (it != joystick_map.end()) {
         while (it->second.size() <= static_cast<std::size_t>(port)) {
-            auto joystick = std::make_shared<SDLJoystick>(guid, static_cast<int>(it->second.size()),
-                                                          nullptr, [](SDL_Joystick*) {});
+            auto joystick =
+                std::make_shared<SDLJoystick>(guid, static_cast<int>(it->second.size()), nullptr);
             it->second.emplace_back(std::move(joystick));
         }
         return it->second[port];
     }
-    auto joystick = std::make_shared<SDLJoystick>(guid, 0, nullptr, [](SDL_Joystick*) {});
+    auto joystick = std::make_shared<SDLJoystick>(guid, 0, nullptr);
     return joystick_map[guid].emplace_back(std::move(joystick));
 }
 
@@ -223,13 +226,12 @@ std::shared_ptr<SDLGameController> SDLState::GetSDLGameControllerByGUID(const st
     if (it != controller_map.end()) {
         while (it->second.size() <= static_cast<std::size_t>(port)) {
             auto controller = std::make_shared<SDLGameController>(
-                guid, static_cast<int>(it->second.size()), nullptr, [](SDL_GameController*) {});
+                guid, static_cast<int>(it->second.size()), nullptr);
             it->second.emplace_back(std::move(controller));
         }
         return it->second[port];
     }
-    auto controller =
-        std::make_shared<SDLGameController>(guid, 0, nullptr, [](SDL_GameController*) {});
+    auto controller = std::make_shared<SDLGameController>(guid, 0, nullptr);
     return controller_map[guid].emplace_back(std::move(controller));
 }
 
@@ -439,7 +441,7 @@ void SDLState::CloseJoystick(SDL_Joystick* sdl_joystick) {
     }
     // Destruct SDL_Joystick outside the lock guard because SDL can internally call event calback
     // which locks the mutex again
-    joystick->SetSDLJoystick(nullptr, [](SDL_Joystick*) {});
+    joystick->SetSDLJoystick(nullptr);
 }
 
 void SDLState::CloseGameController(SDL_GameController* sdl_controller) {
@@ -455,7 +457,7 @@ void SDLState::CloseGameController(SDL_GameController* sdl_controller) {
                          });
         controller = *controller_it;
     }
-    controller->SetSDLGameController(nullptr, [](SDL_GameController*) {});
+    controller->SetSDLGameController(nullptr);
 }
 
 void SDLState::HandleGameControllerEvent(const SDL_Event& event) {
