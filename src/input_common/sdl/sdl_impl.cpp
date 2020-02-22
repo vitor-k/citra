@@ -48,7 +48,7 @@ static int SDLEventWatcher(void* userdata, SDL_Event* event) {
     return 0;
 }
 
-static const std::array<SDL_GameControllerButton, Settings::NativeButton::NumButtons>
+constexpr std::array<SDL_GameControllerButton, Settings::NativeButton::NumButtons>
     xinput_to_3ds_mapping = {{
         SDL_CONTROLLER_BUTTON_B,
         SDL_CONTROLLER_BUTTON_A,
@@ -145,7 +145,7 @@ public:
             std::unique_ptr<SDL_Joystick, decltype(&SDL_JoystickClose)>(joystick, deleter);
     }
 
-    SDL_GameController* GetGameController() {
+    SDL_GameController* GetGameController() const {
         return SDL_GameControllerFromInstanceID(SDL_JoystickInstanceID(sdl_joystick.get()));
     }
 
@@ -280,7 +280,7 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     SDL_GameController* controller = GetSDLGameControllerByGUID(guid, port)->GetSDLGameController();
     SDL_GameControllerButtonBind button_bind;
 
-    if (controller == NULL) {
+    if (!controller) {
         LOG_WARNING(Input, "failed to open controller {}", guid);
         return {{}};
     }
@@ -329,7 +329,6 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     default:
         LOG_WARNING(Input, "unknown SDL bind type {}", button_bind.bindType);
         return {{}};
-        break;
     }
 
     return params;
@@ -344,7 +343,7 @@ Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
     SDL_GameControllerButtonBind button_bind_x;
     SDL_GameControllerButtonBind button_bind_y;
 
-    if (controller == NULL) {
+    if (!controller) {
         LOG_WARNING(Input, "failed to open controller {}", guid);
         return {{}};
     }
@@ -352,11 +351,9 @@ Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
     if (analog == Settings::NativeAnalog::Values::CirclePad) {
         button_bind_x = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
         button_bind_y = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-
     } else if (analog == Settings::NativeAnalog::Values::CStick) {
         button_bind_x = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
         button_bind_y = SDL_GameControllerGetBindForAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
-
     } else {
         LOG_WARNING(Input, "analog value out of range {}", analog);
         return {{}};

@@ -449,20 +449,21 @@ void ConfigureInput::MapFromButton(const Common::ParamPackage& params) {
 void ConfigureInput::AutoMap() {
     if (QMessageBox::information(this, tr("Information"),
                                  tr("After pressing OK, press any button on your joystick"),
-                                 QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
-        input_setter = [=](const Common::ParamPackage& params) {
-            MapFromButton(params);
-            ApplyConfiguration();
-            Settings::SaveProfile(ui->profile->currentIndex());
-        };
-        device_pollers = InputCommon::Polling::GetPollers(InputCommon::Polling::DeviceType::Button);
-        want_keyboard_keys = false;
-        for (auto& poller : device_pollers) {
-            poller->Start();
-        }
-        timeout_timer->start(5000); // Cancel after 5 seconds
-        poll_timer->start(200);     // Check for new inputs every 200ms
+                                 QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Cancel) {
+        return;
     }
+    input_setter = [=](const Common::ParamPackage& params) {
+        MapFromButton(params);
+        ApplyConfiguration();
+        Settings::SaveProfile(ui->profile->currentIndex());
+    };
+    device_pollers = InputCommon::Polling::GetPollers(InputCommon::Polling::DeviceType::Button);
+    want_keyboard_keys = false;
+    for (auto& poller : device_pollers) {
+        poller->Start();
+    }
+    timeout_timer->start(5000); // Cancel after 5 seconds
+    poll_timer->start(200);     // Check for new inputs every 200ms
 }
 
 void ConfigureInput::HandleClick(QPushButton* button,
