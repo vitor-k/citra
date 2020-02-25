@@ -23,6 +23,54 @@
 #include "core/frontend/input.h"
 #include "input_common/sdl/sdl_impl.h"
 
+// These structures are not actually defined in the headers, so we need to define them here to use
+// them.
+typedef struct {
+    SDL_GameControllerBindType inputType;
+    union {
+        int button;
+
+        struct {
+            int axis;
+            int axis_min;
+            int axis_max;
+        } axis;
+
+        struct {
+            int hat;
+            int hat_mask;
+        } hat;
+
+    } input;
+
+    SDL_GameControllerBindType outputType;
+    union {
+        SDL_GameControllerButton button;
+
+        struct {
+            SDL_GameControllerAxis axis;
+            int axis_min;
+            int axis_max;
+        } axis;
+
+    } output;
+
+} SDL_ExtendedGameControllerBind;
+
+struct _SDL_GameController {
+    SDL_Joystick* joystick; /* underlying joystick device */
+    int ref_count;
+
+    const char* name;
+    int num_bindings;
+    SDL_ExtendedGameControllerBind* bindings;
+    SDL_ExtendedGameControllerBind** last_match_axis;
+    Uint8* last_hat_mask;
+    Uint32 guide_button_down;
+
+    struct _SDL_GameController* next; /* pointer to next game controller we have allocated */
+};
+
 namespace InputCommon {
 
 namespace SDL {
@@ -281,6 +329,7 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     params.Set("port", port);
     SDL_GameController* controller = GetSDLGameControllerByGUID(guid, port)->GetSDLGameController();
     SDL_GameControllerButtonBind button_bind;
+    SDL_ExtendedGameControllerBind extended_bind;
 
     if (!controller) {
         LOG_WARNING(Input, "failed to open controller {}", guid);
@@ -301,6 +350,8 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     } else {
         button_bind = SDL_GameControllerGetBindForButton(controller, mapped_button);
     }
+    extended_bind = (controller)->bindings[mapped_button];
+
     switch (button_bind.bindType) {
     case SDL_CONTROLLER_BINDTYPE_BUTTON:
         params.Set("button", button_bind.value.button);
@@ -326,7 +377,16 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
         break;
     case SDL_CONTROLLER_BINDTYPE_AXIS:
         params.Set("axis", button_bind.value.axis);
-        params.Set("direction", 0.5f);
+        if (extended_bind.input.axis.axis_max < extended_bind.input.axis.axis_min) {
+            params.Set("direction", "-");
+        } else {
+            params.Set("direction", "+");
+        }
+        params.Set(
+            "threshold",
+            (extended_bind.input.axis.axis_min +
+             (extended_bind.input.axis.axis_max - extended_bind.input.axis.axis_min) / 2.0f) /
+                SDL_JOYSTICK_AXIS_MAX);
         break;
     default:
         LOG_WARNING(Input, "unknown SDL bind type {}", button_bind.bindType);
