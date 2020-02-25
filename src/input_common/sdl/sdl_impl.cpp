@@ -388,6 +388,9 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
              (extended_bind.input.axis.axis_max - extended_bind.input.axis.axis_min) / 2.0f) /
                 SDL_JOYSTICK_AXIS_MAX);
         break;
+    case SDL_CONTROLLER_BINDTYPE_NONE:
+        LOG_WARNING(Input, "Button not bound: {}", Settings::NativeButton::mapping[button]);
+        return {{}};
     default:
         LOG_WARNING(Input, "unknown SDL bind type {}", button_bind.bindType);
         return {{}};
@@ -421,12 +424,12 @@ Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
         return {{}};
     }
 
-    if (button_bind_x.bindType == SDL_CONTROLLER_BINDTYPE_AXIS &&
-        button_bind_y.bindType == SDL_CONTROLLER_BINDTYPE_AXIS) {
-        params.Set("axis_x", button_bind_x.value.axis);
-        params.Set("axis_y", button_bind_y.value.axis);
+    if (button_bind_x.bindType != SDL_CONTROLLER_BINDTYPE_AXIS ||
+        button_bind_y.bindType != SDL_CONTROLLER_BINDTYPE_AXIS) {
+        return {{}};
     }
-
+    params.Set("axis_x", button_bind_x.value.axis);
+    params.Set("axis_y", button_bind_y.value.axis);
     return params;
 }
 
