@@ -26,6 +26,16 @@
 namespace Common {
 
 #ifdef _MSC_VER
+#if _MSC_VER > 1913
+void SetCurrentThreadName(const char* name) {
+    int wchars_num = MultiByteToWideChar( CP_UTF8 , 0 , name , -1, NULL , 0 );
+    wchar_t* wstr = new wchar_t[wchars_num];
+    MultiByteToWideChar( CP_UTF8 , 0 , name , -1, wstr , wchars_num );
+    // do whatever with wstr
+    SetThreadDescription(GetCurrentThread(), wstr);
+    delete[] wstr;
+}
+#else
 
 // Sets the debugger-visible name of the current thread.
 // Uses trick documented in:
@@ -53,6 +63,7 @@ void SetCurrentThreadName(const char* name) {
     }
 }
 
+#endif
 #else // !MSVC_VER, so must be POSIX threads
 
 // MinGW with the POSIX threading model does not support pthread_setname_np
