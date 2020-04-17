@@ -350,7 +350,6 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     } else {
         button_bind = SDL_GameControllerGetBindForButton(controller, mapped_button);
     }
-    extended_bind = (controller)->bindings[mapped_button];
 
     switch (button_bind.bindType) {
     case SDL_CONTROLLER_BINDTYPE_BUTTON:
@@ -377,6 +376,9 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
         break;
     case SDL_CONTROLLER_BINDTYPE_AXIS:
         params.Set("axis", button_bind.value.axis);
+
+#if SDL_VERSION_ATLEAST(2, 0, 6)
+        extended_bind = (controller)->bindings[mapped_button];
         if (extended_bind.input.axis.axis_max < extended_bind.input.axis.axis_min) {
             params.Set("direction", "-");
         } else {
@@ -387,6 +389,9 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
             (extended_bind.input.axis.axis_min +
              (extended_bind.input.axis.axis_max - extended_bind.input.axis.axis_min) / 2.0f) /
                 SDL_JOYSTICK_AXIS_MAX);
+#else
+        params.Set("direction", "+"); // lacks extended_bind, so just a guess
+#endif
         break;
     case SDL_CONTROLLER_BINDTYPE_NONE:
         LOG_WARNING(Input, "Button not bound: {}", Settings::NativeButton::mapping[button]);
