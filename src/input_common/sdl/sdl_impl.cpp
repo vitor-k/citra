@@ -329,7 +329,6 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
     params.Set("port", port);
     SDL_GameController* controller = GetSDLGameControllerByGUID(guid, port)->GetSDLGameController();
     SDL_GameControllerButtonBind button_bind;
-    SDL_ExtendedGameControllerBind extended_bind;
 
     if (!controller) {
         LOG_WARNING(Input, "failed to open controller {}", guid);
@@ -378,17 +377,20 @@ Common::ParamPackage SDLState::GetSDLControllerButtonBindByGUID(
         params.Set("axis", button_bind.value.axis);
 
 #if SDL_VERSION_ATLEAST(2, 0, 6)
-        extended_bind = (controller)->bindings[mapped_button];
-        if (extended_bind.input.axis.axis_max < extended_bind.input.axis.axis_min) {
-            params.Set("direction", "-");
-        } else {
-            params.Set("direction", "+");
+        {
+            const SDL_ExtendedGameControllerBind extended_bind =
+                controller->bindings[mapped_button];
+            if (extended_bind.input.axis.axis_max < extended_bind.input.axis.axis_min) {
+                params.Set("direction", "-");
+            } else {
+                params.Set("direction", "+");
+            }
+            params.Set(
+                "threshold",
+                (extended_bind.input.axis.axis_min +
+                 (extended_bind.input.axis.axis_max - extended_bind.input.axis.axis_min) / 2.0f) /
+                    SDL_JOYSTICK_AXIS_MAX);
         }
-        params.Set(
-            "threshold",
-            (extended_bind.input.axis.axis_min +
-             (extended_bind.input.axis.axis_max - extended_bind.input.axis.axis_min) / 2.0f) /
-                SDL_JOYSTICK_AXIS_MAX);
 #else
         params.Set("direction", "+"); // lacks extended_bind, so just a guess
 #endif
@@ -441,7 +443,7 @@ Common::ParamPackage SDLState::GetSDLControllerAnalogBindByGUID(
 void SDLState::InitJoystick(int joystick_index) {
     SDL_Joystick* sdl_joystick = SDL_JoystickOpen(joystick_index);
     if (!sdl_joystick) {
-        LOG_ERROR(Input, "failed to open joystick {}, with error: ", joystick_index,
+        LOG_ERROR(Input, "failed to open joystick {}, with error: {}", joystick_index,
                   SDL_GetError());
         return;
     }
