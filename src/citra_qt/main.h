@@ -120,6 +120,9 @@ private:
     void ConnectWidgetEvents();
     void ConnectMenuEvents();
 
+    void ResizeScreen(int scale);
+    void UncheckWindowSize();
+
     void PreventOSSleep();
     void AllowOSSleep();
 
@@ -197,6 +200,7 @@ private slots:
     void OnDisplayTitleBars(bool);
     void InitializeHotkeys();
     void ToggleFullscreen();
+    void ChangeScreenSize();
     void ChangeScreenLayout();
     void ToggleScreenLayout();
     void OnSwapScreens();
@@ -261,8 +265,10 @@ private:
     // The path to the game currently running
     QString game_path;
 
+    // Internal states of misc features
     bool auto_paused = false;
     QTimer mouse_hide_timer;
+    bool auto_resized = false;
 
     // Movie
     bool movie_record_on_start = false;
@@ -316,6 +322,7 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 };
 
 Q_DECLARE_METATYPE(std::size_t);

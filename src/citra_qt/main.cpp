@@ -314,6 +314,12 @@ void GMainWindow::InitializeWidgets() {
     actionGroup_ScreenLayouts->addAction(ui->action_Screen_Layout_Single_Screen);
     actionGroup_ScreenLayouts->addAction(ui->action_Screen_Layout_Large_Screen);
     actionGroup_ScreenLayouts->addAction(ui->action_Screen_Layout_Side_by_Side);
+
+    QActionGroup* actionGroup_ScreenSizes = new QActionGroup(this);
+    actionGroup_ScreenSizes->addAction(ui->action_Screen_Size_1x);
+    actionGroup_ScreenSizes->addAction(ui->action_Screen_Size_2x);
+    actionGroup_ScreenSizes->addAction(ui->action_Screen_Size_3x);
+    actionGroup_ScreenSizes->addAction(ui->action_Screen_Size_4x);
 }
 
 void GMainWindow::InitializeDebugWidgets() {
@@ -751,6 +757,11 @@ void GMainWindow::ConnectMenuEvents() {
             &GMainWindow::OnSwapScreens);
     connect(ui->action_Screen_Layout_Upright_Screens, &QAction::triggered, this,
             &GMainWindow::OnRotateScreens);
+
+    connect(ui->action_Screen_Size_1x, &QAction::triggered, this, &GMainWindow::ChangeScreenSize);
+    connect(ui->action_Screen_Size_2x, &QAction::triggered, this, &GMainWindow::ChangeScreenSize);
+    connect(ui->action_Screen_Size_3x, &QAction::triggered, this, &GMainWindow::ChangeScreenSize);
+    connect(ui->action_Screen_Size_4x, &QAction::triggered, this, &GMainWindow::ChangeScreenSize);
 
     // Movie
     connect(ui->action_Record_Movie, &QAction::triggered, this, &GMainWindow::OnRecordMovie);
@@ -1665,6 +1676,37 @@ void GMainWindow::ToggleWindowMode() {
     }
 }
 
+void GMainWindow::ResizeScreen(const int scale) {
+    const auto size = Layout::GetMinimumSizeFromLayout(Settings::values.layout_option,
+                                                       Settings::values.upright_screen);
+
+    auto_resized = true;
+
+    render_window->setMinimumSize(scale * size.first, scale * size.second);
+    render_window->UpdateCurrentFramebufferLayout(scale * size.first, scale * size.second);
+    ui->centralwidget->resize(scale * size.first, scale * size.second);
+    resize(sizeHint());
+    render_window->setMinimumSize(size.first, size.second);
+}
+
+void GMainWindow::ChangeScreenSize() {
+    int new_scale = 0;
+
+    if (ui->action_Screen_Size_1x->isChecked()) {
+        new_scale = 1;
+    } else if (ui->action_Screen_Size_2x->isChecked()) {
+        new_scale = 2;
+    } else if (ui->action_Screen_Size_3x->isChecked()) {
+        new_scale = 3;
+    } else if (ui->action_Screen_Size_4x->isChecked()) {
+        new_scale = 4;
+    }
+
+    UISettings::values.fixed_screen_size = new_scale;
+
+    ResizeScreen(new_scale);
+}
+
 void GMainWindow::ChangeScreenLayout() {
     Settings::LayoutOption new_layout = Settings::LayoutOption::Default;
 
@@ -2126,6 +2168,15 @@ void GMainWindow::mouseReleaseEvent([[maybe_unused]] QMouseEvent* event) {
     OnMouseActivity();
 }
 
+void GMainWindow::resizeEvent(QResizeEvent* event) {
+    // This resize event was not triggered by the user
+    if (auto_resized) {
+        auto_resized = false;
+    } else {
+        UncheckWindowSize();
+    }
+}
+
 void GMainWindow::OnCoreError(Core::System::ResultStatus result, std::string details) {
     QString status_message;
 
@@ -2372,6 +2423,13 @@ void GMainWindow::UpdateWindowTitle() {
     }
 }
 
+void GMainWindow::UncheckWindowSize() {
+    ui->action_Screen_Size_1x->setChecked(false);
+    ui->action_Screen_Size_2x->setChecked(false);
+    ui->action_Screen_Size_3x->setChecked(false);
+    ui->action_Screen_Size_4x->setChecked(false);
+}
+
 void GMainWindow::UpdateUISettings() {
     if (!ui->action_Fullscreen->isChecked()) {
         UISettings::values.geometry = saveGeometry();
@@ -2401,6 +2459,11 @@ void GMainWindow::SyncMenuUISettings() {
                                                       Settings::LayoutOption::SideScreen);
     ui->action_Screen_Layout_Swap_Screens->setChecked(Settings::values.swap_screen);
     ui->action_Screen_Layout_Upright_Screens->setChecked(Settings::values.upright_screen);
+
+    ui->action_Screen_Size_1x->setChecked(UISettings::values.fixed_screen_size == 1);
+    ui->action_Screen_Size_2x->setChecked(UISettings::values.fixed_screen_size == 2);
+    ui->action_Screen_Size_3x->setChecked(UISettings::values.fixed_screen_size == 3);
+    ui->action_Screen_Size_4x->setChecked(UISettings::values.fixed_screen_size == 4);
 }
 
 void GMainWindow::RetranslateStatusBar() {

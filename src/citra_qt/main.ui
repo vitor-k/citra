@@ -129,9 +129,19 @@
      <addaction name="action_Screen_Layout_Upright_Screens"/>
      <addaction name="action_Screen_Layout_Swap_Screens"/>
     </widget>
+    <widget class="QMenu" name="menu_Screen_Size">
+     <property name="title">
+      <string>Screen Size</string>
+     </property>
+     <addaction name="action_Screen_Size_1x"/>
+     <addaction name="action_Screen_Size_2x"/>
+     <addaction name="action_Screen_Size_3x"/>
+     <addaction name="action_Screen_Size_4x"/>
+    </widget>
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Single_Window_Mode"/>
     <addaction name="menu_Screen_Layout"/>
+    <addaction name="menu_Screen_Size"/>
     <addaction name="separator"/>
     <addaction name="action_Display_Dock_Widget_Headers"/>
     <addaction name="action_Show_Filter_Bar"/>
@@ -475,6 +485,38 @@
    </property>
    <property name="text">
     <string>Rotate Upright</string>
+   </property>
+  </action>
+  <action name="action_Screen_Size_1x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1x</string>
+   </property>
+  </action>
+  <action name="action_Screen_Size_2x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2x</string>
+   </property>
+  </action>
+  <action name="action_Screen_Size_3x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3x</string>
+   </property>
+  </action>
+  <action name="action_Screen_Size_4x">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>4x</string>
    </property>
   </action>
   <action name="action_Check_For_Updates">

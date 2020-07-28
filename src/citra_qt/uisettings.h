@@ -72,6 +72,7 @@ struct Values {
     bool display_titlebar;
     bool show_filter_bar;
     bool show_status_bar;
+    int fixed_screen_size;
 
     bool confirm_before_closing;
     bool first_start;

@@ -606,6 +606,8 @@ void Config::ReadUIValues() {
     ReadShortcutValues();
     ReadMultiplayerValues();
 
+    UISettings::values.fixed_screen_size =
+        ReadSetting(QStringLiteral("FixedScreenSize"), 0).toInt();
     UISettings::values.single_window_mode =
         ReadSetting(QStringLiteral("singleWindowMode"), true).toBool();
     UISettings::values.fullscreen = ReadSetting(QStringLiteral("fullscreen"), false).toBool();
@@ -1096,6 +1098,7 @@ void Config::SaveUIValues() {
     SaveShortcutValues();
     SaveMultiplayerValues();
 
+    WriteSetting(QStringLiteral("FixedScreenSize"), UISettings::values.fixed_screen_size, 0);
     WriteSetting(QStringLiteral("singleWindowMode"), UISettings::values.single_window_mode, true);
     WriteSetting(QStringLiteral("fullscreen"), UISettings::values.fullscreen, false);
     WriteSetting(QStringLiteral("displayTitleBars"), UISettings::values.display_titlebar, true);
