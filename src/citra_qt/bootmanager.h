@@ -155,11 +155,6 @@ public:
     void PollEvents() override;
     std::unique_ptr<Frontend::GraphicsContext> CreateSharedContext() const override;
 
-    void BackupGeometry();
-    void RestoreGeometry();
-    void restoreGeometry(const QByteArray& geometry); // overridden
-    QByteArray saveGeometry();                        // overridden
-
     qreal windowPixelRatio() const;
 
     void closeEvent(QCloseEvent* event) override;
@@ -211,8 +206,6 @@ private:
     void OnMinimalClientAreaChangeRequest(std::pair<u32, u32> minimal_size) override;
 
     std::unique_ptr<GraphicsContext> core_context;
-
-    QByteArray geometry;
 
     /// Native window handle that backs this presentation widget
     QWindow* child_window = nullptr;

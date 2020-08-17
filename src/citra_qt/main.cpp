@@ -1654,7 +1654,7 @@ void GMainWindow::HideFullscreen() {
 void GMainWindow::ToggleWindowMode() {
     if (ui->action_Single_Window_Mode->isChecked()) {
         // Render in the main window...
-        render_window->BackupGeometry();
+        UISettings::values.renderwindow_geometry = render_window->saveGeometry();
         ui->horizontalLayout->addWidget(render_window);
         render_window->setFocusPolicy(Qt::StrongFocus);
         if (emulation_running) {
@@ -1670,7 +1670,7 @@ void GMainWindow::ToggleWindowMode() {
         render_window->setFocusPolicy(Qt::NoFocus);
         if (emulation_running) {
             render_window->setVisible(true);
-            render_window->RestoreGeometry();
+            render_window->restoreGeometry(UISettings::values.renderwindow_geometry);
             game_list->show();
         }
     }
@@ -2175,6 +2175,7 @@ void GMainWindow::resizeEvent(QResizeEvent* event) {
     } else {
         UncheckWindowSize();
     }
+    QWidget::resizeEvent(event);
 }
 
 void GMainWindow::OnCoreError(Core::System::ResultStatus result, std::string details) {

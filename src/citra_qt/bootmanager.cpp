@@ -13,6 +13,7 @@
 #include <fmt/format.h>
 #include "citra_qt/bootmanager.h"
 #include "citra_qt/main.h"
+#include "citra_qt/uisettings.h"
 #include "common/microprofile.h"
 #include "common/scm_rev.h"
 #include "core/3ds.h"
@@ -235,31 +236,6 @@ void GRenderWindow::OnFramebufferSizeChanged() {
     UpdateCurrentFramebufferLayout(width, height);
 }
 
-void GRenderWindow::BackupGeometry() {
-    geometry = QWidget::saveGeometry();
-}
-
-void GRenderWindow::RestoreGeometry() {
-    // We don't want to back up the geometry here (obviously)
-    QWidget::restoreGeometry(geometry);
-}
-
-void GRenderWindow::restoreGeometry(const QByteArray& geometry) {
-    // Make sure users of this class don't need to deal with backing up the geometry themselves
-    QWidget::restoreGeometry(geometry);
-    BackupGeometry();
-}
-
-QByteArray GRenderWindow::saveGeometry() {
-    // If we are a top-level widget, store the current geometry
-    // otherwise, store the last backup
-    if (parent() == nullptr) {
-        return QWidget::saveGeometry();
-    }
-
-    return geometry;
-}
-
 qreal GRenderWindow::windowPixelRatio() const {
     return devicePixelRatioF();
 }
@@ -381,20 +357,25 @@ void GRenderWindow::InitRenderTarget() {
 
     first_frame = false;
 
+    const auto min_size = Layout::GetMinimumSizeFromLayout(Settings::values.layout_option,
+                                                           Settings::values.upright_screen);
+
+    restoreGeometry(UISettings::values.renderwindow_geometry);
+
     GMainWindow* parent = GetMainWindow();
     QWindow* parent_win_handle = parent ? parent->windowHandle() : nullptr;
     child_window = new OpenGLWindow(parent_win_handle, this, QOpenGLContext::globalShareContext());
     child_window->create();
     child_widget = createWindowContainer(child_window, this);
-    child_widget->resize(Core::kScreenTopWidth, Core::kScreenTopHeight + Core::kScreenBottomHeight);
+    child_widget->resize(min_size.first, min_size.second);
 
     layout()->addWidget(child_widget);
 
     core_context = CreateSharedContext();
-    resize(Core::kScreenTopWidth, Core::kScreenTopHeight + Core::kScreenBottomHeight);
+    resize(min_size.first, min_size.second);
     OnMinimalClientAreaChangeRequest(GetActiveConfig().min_client_area_size);
     OnFramebufferSizeChanged();
-    BackupGeometry();
+    UISettings::values.renderwindow_geometry = saveGeometry();
 }
 
 void GRenderWindow::ReleaseRenderTarget() {
