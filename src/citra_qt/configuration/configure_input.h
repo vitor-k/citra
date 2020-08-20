@@ -12,12 +12,12 @@
 #include <unordered_map>
 #include <QKeyEvent>
 #include <QKeySequence>
+#include <QLabel>
 #include <QSlider>
 #include <QWidget>
 #include "common/param_package.h"
 #include "core/settings.h"
 #include "input_common/main.h"
-#include "ui_configure_input.h"
 
 class QPushButton;
 class QString;
