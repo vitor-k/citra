@@ -261,6 +261,7 @@ void GMainWindow::InitializeWidgets() {
         if (emulation_running) {
             render_window->show();
             render_window->setFocus();
+            ChangeScreenSize();
         }
     });
 
@@ -1662,7 +1663,7 @@ void GMainWindow::ToggleWindowMode() {
             render_window->setFocus();
             game_list->hide();
         }
-
+        ChangeScreenSize();
     } else {
         // Render in a separate window...
         ui->horizontalLayout->removeWidget(render_window);
@@ -1677,16 +1678,28 @@ void GMainWindow::ToggleWindowMode() {
 }
 
 void GMainWindow::ResizeScreen(const int scale) {
+    if(!scale || !emulation_running) {
+        return;
+    }
     const auto size = Layout::GetMinimumSizeFromLayout(Settings::values.layout_option,
                                                        Settings::values.upright_screen);
 
     auto_resized = true;
 
-    render_window->setMinimumSize(scale * size.first, scale * size.second);
+    if(ui->action_Single_Window_Mode->isChecked()) {
+        render_window->setMinimumSize(scale * size.first, scale * size.second);
+        render_window->updateGeometry();
+        ui->centralwidget->resize(scale * size.first, scale * size.second);
+        ui->centralwidget->updateGeometry();
+        updateGeometry();
+        resize(minimumSizeHint());
+    }
+    else {
+        render_window->resize(scale * size.first, scale * size.second);
+    }
     render_window->UpdateCurrentFramebufferLayout(scale * size.first, scale * size.second);
-    ui->centralwidget->resize(scale * size.first, scale * size.second);
-    resize(sizeHint());
     render_window->setMinimumSize(size.first, size.second);
+    UISettings::values.renderwindow_geometry = render_window->saveGeometry();
 }
 
 void GMainWindow::ChangeScreenSize() {
@@ -1722,6 +1735,7 @@ void GMainWindow::ChangeScreenLayout() {
 
     Settings::values.layout_option = new_layout;
     Settings::Apply();
+    ChangeScreenSize();
 }
 
 void GMainWindow::ToggleScreenLayout() {
@@ -1745,6 +1759,7 @@ void GMainWindow::ToggleScreenLayout() {
     Settings::values.layout_option = new_layout;
     SyncMenuUISettings();
     Settings::Apply();
+    ChangeScreenSize();
 }
 
 void GMainWindow::OnSwapScreens() {
@@ -2170,7 +2185,7 @@ void GMainWindow::mouseReleaseEvent([[maybe_unused]] QMouseEvent* event) {
 
 void GMainWindow::resizeEvent(QResizeEvent* event) {
     // This resize event was not triggered by the user
-    if (auto_resized) {
+    if (auto_resized || !emulation_running || !ui->action_Single_Window_Mode->isChecked()) {
         auto_resized = false;
     } else {
         UncheckWindowSize();
@@ -2429,6 +2444,8 @@ void GMainWindow::UncheckWindowSize() {
     ui->action_Screen_Size_2x->setChecked(false);
     ui->action_Screen_Size_3x->setChecked(false);
     ui->action_Screen_Size_4x->setChecked(false);
+
+    UISettings::values.fixed_screen_size = 0;
 }
 
 void GMainWindow::UpdateUISettings() {
