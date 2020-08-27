@@ -149,7 +149,8 @@ static void InitializeLogging() {
 }
 
 GMainWindow::GMainWindow()
-    : config(new Config()), emu_thread(nullptr), ui(std::make_unique<Ui::MainWindow>()) {
+    : config(std::make_unique<Config>()), emu_thread(nullptr),
+      ui(std::make_unique<Ui::MainWindow>()) {
     InitializeLogging();
     Debugger::ToggleConsole();
     Settings::LogSettings();
