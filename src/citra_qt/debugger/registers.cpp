@@ -59,7 +59,7 @@ RegistersWidget::RegistersWidget(QWidget* parent)
     setEnabled(false);
 }
 
-RegistersWidget::~RegistersWidget() {}
+RegistersWidget::~RegistersWidget() = default;
 
 void RegistersWidget::OnDebugModeEntered() {
     if (!Core::System::GetInstance().IsPoweredOn())

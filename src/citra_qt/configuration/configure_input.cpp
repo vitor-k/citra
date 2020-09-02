@@ -6,8 +6,11 @@
 #include <memory>
 #include <utility>
 #include <QInputDialog>
+#include <QKeyEvent>
+#include <QLabel>
 #include <QMenu>
 #include <QMessageBox>
+#include <QSlider>
 #include <QTimer>
 #include "citra_qt/configuration/config.h"
 #include "citra_qt/configuration/configure_input.h"

@@ -10,16 +10,16 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include <QKeyEvent>
 #include <QKeySequence>
-#include <QLabel>
-#include <QSlider>
 #include <QWidget>
 #include "common/param_package.h"
 #include "core/settings.h"
 #include "input_common/main.h"
 
+class QKeyEvent;
+class QLabel;
 class QPushButton;
+class QSlider;
 class QString;
 class QTimer;
 
