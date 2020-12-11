@@ -1678,7 +1678,7 @@ void GMainWindow::ToggleWindowMode() {
 }
 
 void GMainWindow::ResizeScreen(const int scale) {
-    if(!scale || !emulation_running) {
+    if (!scale || !emulation_running) {
         return;
     }
     const auto size = Layout::GetMinimumSizeFromLayout(Settings::values.layout_option,
@@ -1686,15 +1686,14 @@ void GMainWindow::ResizeScreen(const int scale) {
 
     auto_resized = true;
 
-    if(ui->action_Single_Window_Mode->isChecked()) {
+    if (ui->action_Single_Window_Mode->isChecked()) {
         render_window->setMinimumSize(scale * size.first, scale * size.second);
         render_window->updateGeometry();
         ui->centralwidget->resize(scale * size.first, scale * size.second);
         ui->centralwidget->updateGeometry();
         updateGeometry();
         resize(minimumSizeHint());
-    }
-    else {
+    } else {
         render_window->resize(scale * size.first, scale * size.second);
     }
     render_window->UpdateCurrentFramebufferLayout(scale * size.first, scale * size.second);
@@ -1770,6 +1769,7 @@ void GMainWindow::OnSwapScreens() {
 void GMainWindow::OnRotateScreens() {
     Settings::values.upright_screen = ui->action_Screen_Layout_Upright_Screens->isChecked();
     Settings::Apply();
+    ChangeScreenSize();
 }
 
 void GMainWindow::OnCheats() {
