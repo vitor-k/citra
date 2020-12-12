@@ -1677,7 +1677,8 @@ void GMainWindow::ToggleWindowMode() {
     }
 }
 
-void GMainWindow::ResizeScreen(const int scale) {
+void GMainWindow::ResizeScreen() {
+    const int scale = UISettings::values.fixed_screen_size;
     if (!scale || !emulation_running) {
         return;
     }
@@ -1714,9 +1715,19 @@ void GMainWindow::ChangeScreenSize() {
         new_scale = 4;
     }
 
+    const bool needs_workaround = UISettings::values.fixed_screen_size == 1 && new_scale == 1;
     UISettings::values.fixed_screen_size = new_scale;
 
-    ResizeScreen(new_scale);
+    ResizeScreen();
+
+    if (needs_workaround) {
+        // Workaround for a bug when the layout is switched to one
+        // with a smaller minimum size, which would make the window
+        // not resize properly, when in 1x.
+        // TODO (vitor-k): repro and report to Qt and/or find a
+        // better workaround
+        QTimer::singleShot(100, this, &GMainWindow::ResizeScreen);
+    }
 }
 
 void GMainWindow::ChangeScreenLayout() {

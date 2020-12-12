@@ -120,7 +120,7 @@ private:
     void ConnectWidgetEvents();
     void ConnectMenuEvents();
 
-    void ResizeScreen(int scale);
+    void ResizeScreen();
     void UncheckWindowSize();
 
     void PreventOSSleep();
