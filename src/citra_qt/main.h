@@ -38,6 +38,7 @@ class MultiplayerState;
 class ProfilerWidget;
 template <typename>
 class QFutureWatcher;
+class QActionGroup;
 class QLabel;
 class QProgressBar;
 class RegistersWidget;
@@ -112,6 +113,7 @@ private:
     void InitializeDebugWidgets();
     void InitializeRecentFileMenuActions();
     void InitializeSaveStateMenuActions();
+    void InitializeScreenResizeMenuActions();
 
     void SetDefaultUIGeometry();
     void SyncMenuUISettings();
@@ -307,6 +309,9 @@ private:
     u64 oldest_slot_time;
     u32 newest_slot;
     u64 newest_slot_time;
+
+    QActionGroup* actionGroup_ScreenSizes;
+    std::array<QAction*, 10> actions_screen_size;
 
     QTranslator translator;
 

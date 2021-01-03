@@ -133,10 +133,6 @@
      <property name="title">
       <string>Screen Size</string>
      </property>
-     <addaction name="action_Screen_Size_1x"/>
-     <addaction name="action_Screen_Size_2x"/>
-     <addaction name="action_Screen_Size_3x"/>
-     <addaction name="action_Screen_Size_4x"/>
     </widget>
     <addaction name="action_Fullscreen"/>
     <addaction name="action_Single_Window_Mode"/>
@@ -485,38 +481,6 @@
    </property>
    <property name="text">
     <string>Rotate Upright</string>
-   </property>
-  </action>
-  <action name="action_Screen_Size_1x">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>1x</string>
-   </property>
-  </action>
-  <action name="action_Screen_Size_2x">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>2x</string>
-   </property>
-  </action>
-  <action name="action_Screen_Size_3x">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>3x</string>
-   </property>
-  </action>
-  <action name="action_Screen_Size_4x">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>4x</string>
    </property>
   </action>
   <action name="action_Check_For_Updates">
