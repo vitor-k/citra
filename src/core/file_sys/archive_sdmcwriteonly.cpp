@@ -14,9 +14,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // FileSys namespace
 
-SERIALIZE_EXPORT_IMPL(FileSys::SDMCWriteOnlyArchive)
-SERIALIZE_EXPORT_IMPL(FileSys::ArchiveFactory_SDMCWriteOnly)
-
 namespace FileSys {
 
 class SDMCWriteOnlyDelayGenerator : public DelayGenerator {

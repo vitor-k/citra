@@ -16,9 +16,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // FileSys namespace
 
-SERIALIZE_EXPORT_IMPL(FileSys::SDMCArchive)
-SERIALIZE_EXPORT_IMPL(FileSys::ArchiveFactory_SDMC)
-
 namespace FileSys {
 
 class SDMCDelayGenerator : public DelayGenerator {

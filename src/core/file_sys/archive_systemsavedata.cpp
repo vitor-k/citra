@@ -18,8 +18,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // FileSys namespace
 
-SERIALIZE_EXPORT_IMPL(FileSys::ArchiveFactory_SystemSaveData)
-
 namespace FileSys {
 
 std::string GetSystemSaveDataPath(std::string_view mount_point, const Path& path) {

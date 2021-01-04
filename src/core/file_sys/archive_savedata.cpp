@@ -11,8 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // FileSys namespace
 
-SERIALIZE_EXPORT_IMPL(FileSys::ArchiveFactory_SaveData)
-
 namespace FileSys {
 
 ArchiveFactory_SaveData::ArchiveFactory_SaveData(

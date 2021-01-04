@@ -241,9 +241,6 @@ public:
      */
     virtual ResultVal<ArchiveFormatInfo> GetFormatInfo(const Path& path, u64 program_id) const = 0;
 
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int) {}
-    friend class boost::serialization::access;
 };
 
 } // namespace FileSys
