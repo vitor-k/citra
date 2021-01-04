@@ -589,6 +589,9 @@ void System::serialize(Archive& ar, const unsigned int file_version) {
     ar& num_cores;
 
     if (Archive::is_loading::value) {
+        // Do not shut down the archive manager, as it should not change from
+        // loading a save state
+        auto aux_archive_manager = std::move(archive_manager);
         // When loading, we want to make sure any lingering state gets cleared out before we begin.
         // Shutdown, but persist a few things between loads...
         Shutdown(true);
@@ -597,6 +600,7 @@ void System::serialize(Archive& ar, const unsigned int file_version) {
         auto system_mode = this->app_loader->LoadKernelSystemMode();
         auto n3ds_mode = this->app_loader->LoadKernelN3dsMode();
         Init(*m_emu_window, *system_mode.first, *n3ds_mode.first, num_cores);
+        archive_manager = std::move(aux_archive_manager);
     }
 
     // flush on save, don't flush on load
@@ -607,7 +611,6 @@ void System::serialize(Archive& ar, const unsigned int file_version) {
         ar&* cpu_cores[i].get();
     }
     ar&* service_manager.get();
-    ar&* archive_manager.get();
     ar& GPU::g_regs;
     ar& LCD::g_regs;
 
