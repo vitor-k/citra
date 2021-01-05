@@ -88,15 +88,6 @@ public:
      * Flushes the file
      */
     virtual void Flush() const = 0;
-
-protected:
-    std::unique_ptr<DelayGenerator> delay_generator;
-
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int) {
-        ar& delay_generator;
-    }
-    friend class boost::serialization::access;
 };
 
 } // namespace FileSys

@@ -60,5 +60,3 @@ private:
 class SDMCWriteOnlyDelayGenerator;
 
 } // namespace FileSys
-
-BOOST_CLASS_EXPORT_KEY(FileSys::SDMCWriteOnlyDelayGenerator)

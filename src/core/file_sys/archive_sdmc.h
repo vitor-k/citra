@@ -74,5 +74,3 @@ private:
 class SDMCDelayGenerator;
 
 } // namespace FileSys
-
-BOOST_CLASS_EXPORT_KEY(FileSys::SDMCDelayGenerator)

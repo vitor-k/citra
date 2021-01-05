@@ -36,8 +36,6 @@ public:
         static constexpr u64 IPCDelayNanoseconds(269082);
         return IPCDelayNanoseconds;
     }
-
-    SERIALIZE_DELAY_GENERATOR
 };
 
 ResultVal<std::unique_ptr<FileBackend>> SDMCWriteOnlyArchive::OpenFile(const Path& path,
@@ -99,5 +97,3 @@ ResultVal<ArchiveFormatInfo> ArchiveFactory_SDMCWriteOnly::GetFormatInfo(const P
 }
 
 } // namespace FileSys
-
-SERIALIZE_EXPORT_IMPL(FileSys::SDMCWriteOnlyDelayGenerator)

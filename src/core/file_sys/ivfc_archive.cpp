@@ -15,9 +15,6 @@
 
 SERIALIZE_EXPORT_IMPL(FileSys::IVFCFile)
 SERIALIZE_EXPORT_IMPL(FileSys::IVFCFileInMemory)
-SERIALIZE_EXPORT_IMPL(FileSys::IVFCDelayGenerator)
-SERIALIZE_EXPORT_IMPL(FileSys::RomFSDelayGenerator)
-SERIALIZE_EXPORT_IMPL(FileSys::ExeFSDelayGenerator)
 
 namespace FileSys {
 

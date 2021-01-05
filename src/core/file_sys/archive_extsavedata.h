@@ -6,8 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <boost/serialization/export.hpp>
-#include <boost/serialization/string.hpp>
 #include "common/common_types.h"
 #include "core/file_sys/archive_backend.h"
 #include "core/hle/result.h"
@@ -100,5 +98,3 @@ Path ConstructExtDataBinaryPath(u32 media_type, u32 high, u32 low);
 class ExtSaveDataDelayGenerator;
 
 } // namespace FileSys
-
-BOOST_CLASS_EXPORT_KEY(FileSys::ExtSaveDataDelayGenerator)

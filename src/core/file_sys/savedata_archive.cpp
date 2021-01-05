@@ -34,8 +34,6 @@ public:
         static constexpr u64 IPCDelayNanoseconds(269082);
         return IPCDelayNanoseconds;
     }
-
-    SERIALIZE_DELAY_GENERATOR
 };
 
 ResultVal<std::unique_ptr<FileBackend>> SaveDataArchive::OpenFile(const Path& path,
@@ -356,6 +354,3 @@ u64 SaveDataArchive::GetFreeBytes() const {
 }
 
 } // namespace FileSys
-
-SERIALIZE_EXPORT_IMPL(FileSys::SaveDataArchive)
-SERIALIZE_EXPORT_IMPL(FileSys::SaveDataDelayGenerator)
