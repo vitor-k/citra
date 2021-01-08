@@ -77,11 +77,11 @@ ResultVal<std::unique_ptr<FileBackend>> SDMCArchive::OpenFileBase(const Path& pa
         return ERROR_INVALID_OPEN_FLAGS;
     }
 
-    const auto full_path = path_parser.BuildHostPath(mount_point);
+    const auto full_path = path_parser.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
-    switch (path_parser.GetHostStatus(mount_point)) {
+    switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
         return ERROR_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::FileInPath:
@@ -123,11 +123,11 @@ ResultCode SDMCArchive::DeleteFile(const Path& path) const {
         return ERROR_INVALID_PATH;
     }
 
-    const auto full_path = path_parser.BuildHostPath(mount_point);
+    const auto full_path = path_parser.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
-    switch (path_parser.GetHostStatus(mount_point)) {
+    switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
         return ERROR_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::FileInPath:
@@ -165,8 +165,8 @@ ResultCode SDMCArchive::RenameFile(const Path& src_path, const Path& dest_path) 
         return ERROR_INVALID_PATH;
     }
 
-    const auto src_path_full = path_parser_src.BuildHostPath(mount_point);
-    const auto dest_path_full = path_parser_dest.BuildHostPath(mount_point);
+    const auto src_path_full = path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto dest_path_full = path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
     if (FileUtil::Rename(src_path_full, dest_path_full)) {
         return RESULT_SUCCESS;
@@ -218,12 +218,12 @@ static ResultCode DeleteDirectoryHelper(const Path& path, const std::string& mou
 }
 
 ResultCode SDMCArchive::DeleteDirectory(const Path& path) const {
-    return DeleteDirectoryHelper(path, mount_point, FileUtil::DeleteDir);
+    return DeleteDirectoryHelper(path, ArchiveBackend::base_path + mount_point, FileUtil::DeleteDir);
 }
 
 ResultCode SDMCArchive::DeleteDirectoryRecursively(const Path& path) const {
     return DeleteDirectoryHelper(
-        path, mount_point, [](const std::string& p) { return FileUtil::DeleteDirRecursively(p); });
+        path, ArchiveBackend::base_path + mount_point, [](const std::string& p) { return FileUtil::DeleteDirRecursively(p); });
 }
 
 ResultCode SDMCArchive::CreateFile(const FileSys::Path& path, u64 size) const {
@@ -234,11 +234,11 @@ ResultCode SDMCArchive::CreateFile(const FileSys::Path& path, u64 size) const {
         return ERROR_INVALID_PATH;
     }
 
-    const auto full_path = path_parser.BuildHostPath(mount_point);
+    const auto full_path = path_parser.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
-    switch (path_parser.GetHostStatus(mount_point)) {
+    switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
         return ERROR_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::FileInPath:
@@ -279,11 +279,11 @@ ResultCode SDMCArchive::CreateDirectory(const Path& path) const {
         return ERROR_INVALID_PATH;
     }
 
-    const auto full_path = path_parser.BuildHostPath(mount_point);
+    const auto full_path = path_parser.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
-    switch (path_parser.GetHostStatus(mount_point)) {
+    switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
         return ERROR_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::FileInPath:
@@ -297,11 +297,11 @@ ResultCode SDMCArchive::CreateDirectory(const Path& path) const {
         break; // Expected 'success' case
     }
 
-    if (FileUtil::CreateDir(mount_point + path.AsString())) {
+    if (FileUtil::CreateDir(ArchiveBackend::base_path + mount_point + path.AsString())) {
         return RESULT_SUCCESS;
     }
 
-    LOG_CRITICAL(Service_FS, "(unreachable) Unknown error creating {}", mount_point);
+    LOG_CRITICAL(Service_FS, "(unreachable) Unknown error creating {}", ArchiveBackend::base_path + mount_point);
     return ResultCode(ErrorDescription::NoData, ErrorModule::FS, ErrorSummary::Canceled,
                       ErrorLevel::Status);
 }
@@ -322,8 +322,8 @@ ResultCode SDMCArchive::RenameDirectory(const Path& src_path, const Path& dest_p
         return ERROR_INVALID_PATH;
     }
 
-    const auto src_path_full = path_parser_src.BuildHostPath(mount_point);
-    const auto dest_path_full = path_parser_dest.BuildHostPath(mount_point);
+    const auto src_path_full = path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto dest_path_full = path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
     if (FileUtil::Rename(src_path_full, dest_path_full)) {
         return RESULT_SUCCESS;
@@ -343,11 +343,11 @@ ResultVal<std::unique_ptr<DirectoryBackend>> SDMCArchive::OpenDirectory(const Pa
         return ERROR_INVALID_PATH;
     }
 
-    const auto full_path = path_parser.BuildHostPath(mount_point);
+    const auto full_path = path_parser.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
-    switch (path_parser.GetHostStatus(mount_point)) {
+    switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
         return ERROR_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::NotFound:

@@ -197,7 +197,7 @@ public:
 
 protected:
     std::unique_ptr<DelayGenerator> delay_generator;
-
+    static std::string base_path;
 private:
     template <class Archive>
     void serialize(Archive& ar, const unsigned int) {

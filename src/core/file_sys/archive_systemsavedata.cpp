@@ -57,12 +57,14 @@ ArchiveFactory_SystemSaveData::ArchiveFactory_SystemSaveData(const std::string& 
 
 ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_SystemSaveData::Open(const Path& path,
                                                                                u64 program_id) {
-    std::string fullpath = GetSystemSaveDataPath(base_path, path);
+    const std::string fullpath = GetSystemSaveDataPath(base_path, path);
+    std::string relative_path =
+        GetSystemSaveDataPath(GetSystemSaveDataContainerPath("nand/"), path);
     if (!FileUtil::Exists(fullpath)) {
         // TODO(Subv): Check error code, this one is probably wrong
         return ERR_NOT_FORMATTED;
     }
-    auto archive = std::make_unique<SaveDataArchive>(fullpath);
+    auto archive = std::make_unique<SaveDataArchive>(relative_path);
     return MakeResult<std::unique_ptr<ArchiveBackend>>(std::move(archive));
 }
 

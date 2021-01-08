@@ -124,11 +124,12 @@ public:
             return ERROR_UNSUPPORTED_OPEN_FLAGS;
         }
 
-        const auto full_path = path_parser.BuildHostPath(mount_point);
+        const auto full_path = path_parser.BuildHostPath(SaveDataArchive::base_path + mount_point);
 
-        switch (path_parser.GetHostStatus(mount_point)) {
+        switch (path_parser.GetHostStatus(SaveDataArchive::base_path + mount_point)) {
         case PathParser::InvalidMountPoint:
-            LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", mount_point);
+            LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                         SaveDataArchive::base_path + mount_point);
             return ERROR_FILE_NOT_FOUND;
         case PathParser::PathNotFound:
             LOG_ERROR(Service_FS, "Path not found {}", full_path);
@@ -248,6 +249,9 @@ Path ArchiveFactory_ExtSaveData::GetCorrectedPath(const Path& path) {
 ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_ExtSaveData::Open(const Path& path,
                                                                             u64 program_id) {
     std::string fullpath = GetExtSaveDataPath(mount_point, GetCorrectedPath(path)) + "user/";
+    std::string relative_path =
+        GetExtSaveDataPath(GetExtDataContainerPath("nand/", shared), GetCorrectedPath(path)) +
+        "user/";
     if (!FileUtil::Exists(fullpath)) {
         // TODO(Subv): Verify the archive behavior of SharedExtSaveData compared to ExtSaveData.
         // ExtSaveData seems to return FS_NotFound (120) when the archive doesn't exist.
@@ -258,7 +262,7 @@ ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_ExtSaveData::Open(cons
         }
     }
     std::unique_ptr<DelayGenerator> delay_generator = std::make_unique<ExtSaveDataDelayGenerator>();
-    auto archive = std::make_unique<ExtSaveDataArchive>(fullpath, std::move(delay_generator));
+    auto archive = std::make_unique<ExtSaveDataArchive>(relative_path, std::move(delay_generator));
     return MakeResult<std::unique_ptr<ArchiveBackend>>(std::move(archive));
 }
 

@@ -7,10 +7,13 @@
 #include <sstream>
 #include "common/logging/log.h"
 #include "common/string_util.h"
+#include "common/file_util.h"
 #include "core/file_sys/archive_backend.h"
 #include "core/memory.h"
 
 namespace FileSys {
+
+std::string ArchiveBackend::base_path = FileUtil::GetUserPath(FileUtil::UserPath::UserDir);
 
 Path::Path(LowPathType type, std::vector<u8> data) : type(type) {
     switch (type) {

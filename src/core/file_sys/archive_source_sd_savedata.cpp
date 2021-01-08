@@ -44,7 +44,9 @@ ArchiveSource_SDSaveData::ArchiveSource_SDSaveData(const std::string& sdmc_direc
 }
 
 ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveSource_SDSaveData::Open(u64 program_id) {
-    std::string concrete_mount_point = GetSaveDataPath(mount_point, program_id);
+    const std::string concrete_mount_point = GetSaveDataPath(mount_point, program_id);
+    std::string relative_mount_point =
+        GetSaveDataPath(GetSaveDataContainerPath("sdmc/"), program_id);
     if (!FileUtil::Exists(concrete_mount_point)) {
         // When a SaveData archive is created for the first time, it is not yet formatted and the
         // save file/directory structure expected by the game has not yet been initialized.
@@ -53,7 +55,7 @@ ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveSource_SDSaveData::Open(u64 pr
         return ERR_NOT_FORMATTED;
     }
 
-    auto archive = std::make_unique<SaveDataArchive>(std::move(concrete_mount_point));
+    auto archive = std::make_unique<SaveDataArchive>(std::move(relative_mount_point));
     return MakeResult<std::unique_ptr<ArchiveBackend>>(std::move(archive));
 }
 
