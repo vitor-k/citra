@@ -16,6 +16,8 @@
 
 namespace FileSys {
 
+std::string GetSaveDataContainerPath(const std::string& sdmc_directory);
+
 /// A common source of SD save data archive
 class ArchiveSource_SDSaveData {
 public:
@@ -33,7 +35,9 @@ private:
     ArchiveSource_SDSaveData() = default;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int) {
-        ar& mount_point;
+        if (Archive::is_loading::value) {
+            mount_point = GetSaveDataContainerPath(ArchiveFactory::sdmc_directory);
+        }
     }
     friend class boost::serialization::access;
 };

@@ -14,6 +14,8 @@
 namespace FileSys {
 
 std::string ArchiveBackend::base_path = FileUtil::GetUserPath(FileUtil::UserPath::UserDir);
+std::string ArchiveFactory::sdmc_directory = FileUtil::GetUserPath(FileUtil::UserPath::SDMCDir);
+std::string ArchiveFactory::nand_directory = FileUtil::GetUserPath(FileUtil::UserPath::NANDDir);
 
 Path::Path(LowPathType type, std::vector<u8> data) : type(type) {
     switch (type) {

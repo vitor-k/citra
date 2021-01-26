@@ -58,7 +58,7 @@ protected:
 /// File system interface to the SDMC archive
 class ArchiveFactory_SDMC final : public ArchiveFactory {
 public:
-    explicit ArchiveFactory_SDMC(const std::string& mount_point);
+    explicit ArchiveFactory_SDMC();
 
     /**
      * Initialize the archive.
@@ -76,13 +76,9 @@ public:
     ResultVal<ArchiveFormatInfo> GetFormatInfo(const Path& path, u64 program_id) const override;
 
 private:
-    std::string sdmc_directory;
-
-    ArchiveFactory_SDMC() = default;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int) {
         ar& boost::serialization::base_object<ArchiveFactory>(*this);
-        ar& sdmc_directory;
     }
     friend class boost::serialization::access;
 };

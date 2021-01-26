@@ -44,7 +44,7 @@ private:
 /// File system interface to the SDMC write-only archive
 class ArchiveFactory_SDMCWriteOnly final : public ArchiveFactory {
 public:
-    explicit ArchiveFactory_SDMCWriteOnly(const std::string& mount_point);
+    explicit ArchiveFactory_SDMCWriteOnly();
 
     /**
      * Initialize the archive.
@@ -62,13 +62,9 @@ public:
     ResultVal<ArchiveFormatInfo> GetFormatInfo(const Path& path, u64 program_id) const override;
 
 private:
-    std::string sdmc_directory;
-
-    ArchiveFactory_SDMCWriteOnly() = default;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int) {
         ar& boost::serialization::base_object<ArchiveFactory>(*this);
-        ar& sdmc_directory;
     }
     friend class boost::serialization::access;
 };

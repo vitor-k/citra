@@ -18,11 +18,11 @@ SERIALIZE_EXPORT_IMPL(FileSys::ArchiveSource_SDSaveData)
 
 namespace FileSys {
 
-namespace {
-
 std::string GetSaveDataContainerPath(const std::string& sdmc_directory) {
     return fmt::format("{}Nintendo 3DS/{}/{}/title/", sdmc_directory, SYSTEM_ID, SDCARD_ID);
 }
+
+namespace {
 
 std::string GetSaveDataPath(const std::string& mount_location, u64 program_id) {
     u32 high = static_cast<u32>(program_id >> 32);

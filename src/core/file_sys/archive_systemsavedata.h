@@ -20,7 +20,7 @@ namespace FileSys {
 /// File system interface to the SystemSaveData archive
 class ArchiveFactory_SystemSaveData final : public ArchiveFactory {
 public:
-    explicit ArchiveFactory_SystemSaveData(const std::string& mount_point);
+    explicit ArchiveFactory_SystemSaveData() = default;
 
     ResultVal<std::unique_ptr<ArchiveBackend>> Open(const Path& path, u64 program_id) override;
     ResultCode Format(const Path& path, const FileSys::ArchiveFormatInfo& format_info,
@@ -32,13 +32,9 @@ public:
     }
 
 private:
-    std::string base_path;
-
-    ArchiveFactory_SystemSaveData() = default;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int) {
         ar& boost::serialization::base_object<ArchiveFactory>(*this);
-        ar& base_path;
     }
     friend class boost::serialization::access;
 };

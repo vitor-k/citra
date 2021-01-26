@@ -58,8 +58,7 @@ ResultVal<std::unique_ptr<DirectoryBackend>> SDMCWriteOnlyArchive::OpenDirectory
     return ERROR_UNSUPPORTED_OPEN_FLAGS;
 }
 
-ArchiveFactory_SDMCWriteOnly::ArchiveFactory_SDMCWriteOnly(const std::string& mount_point)
-    : sdmc_directory(mount_point) {
+ArchiveFactory_SDMCWriteOnly::ArchiveFactory_SDMCWriteOnly() {
     LOG_DEBUG(Service_FS, "Directory {} set as SDMCWriteOnly.", sdmc_directory);
 }
 

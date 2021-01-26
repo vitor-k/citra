@@ -324,13 +324,13 @@ void ArchiveManager::RegisterArchiveTypes() {
 
     std::string sdmc_directory = FileUtil::GetUserPath(FileUtil::UserPath::SDMCDir);
     std::string nand_directory = FileUtil::GetUserPath(FileUtil::UserPath::NANDDir);
-    auto sdmc_factory = std::make_unique<FileSys::ArchiveFactory_SDMC>(sdmc_directory);
+    auto sdmc_factory = std::make_unique<FileSys::ArchiveFactory_SDMC>();
     if (sdmc_factory->Initialize())
         RegisterArchiveType(std::move(sdmc_factory), ArchiveIdCode::SDMC);
     else
         LOG_ERROR(Service_FS, "Can't instantiate SDMC archive with path {}", sdmc_directory);
 
-    auto sdmcwo_factory = std::make_unique<FileSys::ArchiveFactory_SDMCWriteOnly>(sdmc_directory);
+    auto sdmcwo_factory = std::make_unique<FileSys::ArchiveFactory_SDMCWriteOnly>();
     if (sdmcwo_factory->Initialize())
         RegisterArchiveType(std::move(sdmcwo_factory), ArchiveIdCode::SDMCWriteOnly);
     else
@@ -363,7 +363,7 @@ void ArchiveManager::RegisterArchiveTypes() {
     RegisterArchiveType(std::move(savedatacheck_factory), ArchiveIdCode::NCCH);
 
     auto systemsavedata_factory =
-        std::make_unique<FileSys::ArchiveFactory_SystemSaveData>(nand_directory);
+        std::make_unique<FileSys::ArchiveFactory_SystemSaveData>();
     RegisterArchiveType(std::move(systemsavedata_factory), ArchiveIdCode::SystemSaveData);
 
     auto selfncch_factory = std::make_unique<FileSys::ArchiveFactory_SelfNCCH>();

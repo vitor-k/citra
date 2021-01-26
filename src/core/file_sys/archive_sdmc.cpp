@@ -370,8 +370,7 @@ u64 SDMCArchive::GetFreeBytes() const {
     return 1024 * 1024 * 1024;
 }
 
-ArchiveFactory_SDMC::ArchiveFactory_SDMC(const std::string& sdmc_directory)
-    : sdmc_directory(sdmc_directory) {
+ArchiveFactory_SDMC::ArchiveFactory_SDMC() {
 
     LOG_DEBUG(Service_FS, "Directory {} set as SDMC.", sdmc_directory);
 }

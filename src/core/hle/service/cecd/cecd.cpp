@@ -1381,7 +1381,7 @@ Module::Module(Core::System& system) : system(system) {
         system.Kernel().CreateEvent(Kernel::ResetType::OneShot, "CECD::change_state_event");
 
     const std::string& nand_directory = FileUtil::GetUserPath(FileUtil::UserPath::NANDDir);
-    FileSys::ArchiveFactory_SystemSaveData systemsavedata_factory(nand_directory);
+    FileSys::ArchiveFactory_SystemSaveData systemsavedata_factory;
 
     // Open the SystemSaveData archive 0x00010026
     FileSys::Path archive_path(cecd_system_savedata_id);
