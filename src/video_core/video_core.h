@@ -5,7 +5,6 @@
 #pragma once
 
 #include <atomic>
-#include <iostream>
 #include <memory>
 #include "core/frontend/emu_window.h"
 
