@@ -6,7 +6,7 @@
 
 #include <atomic>
 #include <memory>
-#include "core/frontend/emu_window.h"
+#include "core/frontend/framebuffer_layout.h"
 
 namespace Frontend {
 class EmuWindow;

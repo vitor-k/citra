@@ -5,6 +5,7 @@
 #include <memory>
 #include "common/archives.h"
 #include "common/logging/log.h"
+#include "core/frontend/emu_window.h"
 #include "core/settings.h"
 #include "video_core/pica.h"
 #include "video_core/pica_state.h"

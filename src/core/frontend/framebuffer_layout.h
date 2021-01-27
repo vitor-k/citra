@@ -7,7 +7,7 @@
 #include "common/math_util.h"
 
 namespace Settings {
-    enum class LayoutOption;
+enum class LayoutOption;
 }
 
 namespace Layout {
