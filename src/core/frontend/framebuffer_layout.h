@@ -5,7 +5,10 @@
 #pragma once
 
 #include "common/math_util.h"
-#include "core/settings.h"
+
+namespace Settings {
+    enum class LayoutOption;
+}
 
 namespace Layout {
 
