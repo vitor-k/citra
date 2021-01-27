@@ -3,7 +3,6 @@
 // Refer to the license.txt file included.
 
 #include <clocale>
-#include <fstream>
 #include <memory>
 #include <thread>
 #include <QDesktopWidget>

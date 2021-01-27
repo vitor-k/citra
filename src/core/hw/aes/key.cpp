@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <fstream>
 #include <optional>
 #include <sstream>
 #include <cryptopp/aes.h>
