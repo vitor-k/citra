@@ -75,6 +75,7 @@
 #include "core/frontend/applets/default_applets.h"
 #include "core/frontend/scope_acquire_context.h"
 #include "core/gdbstub/gdbstub.h"
+#include "core/hle/service/am/am.h"
 #include "core/hle/service/fs/archive.h"
 #include "core/hle/service/nfc/nfc.h"
 #include "core/loader/loader.h"
