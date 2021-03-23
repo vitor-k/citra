@@ -137,6 +137,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 if (ENABLE_SDL2)
+    add_compile_definitions(SDL_DISABLE_IMMINTRIN_H) #for mac M1
     if (CITRA_USE_BUNDLED_SDL2)
         # Detect toolchain and platform
         if ((MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS 1930) AND ARCHITECTURE_x86_64)
