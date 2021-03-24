@@ -291,9 +291,11 @@ endif()
 
 if (MSVC)
     include(CopyCitraQt5Deps)
-    include(CopyCitraSDLDeps)
     copy_citra_Qt5_deps(citra-qt)
-    copy_citra_SDL_deps(citra-qt)
+    if (NOT CITRA_USE_COMPILED_SDL2)
+        include(CopyCitraSDLDeps)
+        copy_citra_SDL_deps(citra-qt)
+    endif()
 
     if (ENABLE_FFMPEG)
         include(CopyCitraFFmpegDeps)
