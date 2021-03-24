@@ -71,6 +71,14 @@ target_include_directories(nihstro-headers INTERFACE ./nihstro/include)
 # Open Source Archives
 add_subdirectory(open_source_archives)
 
+# SDL
+if (CITRA_USE_COMPILED_SDL2)
+    set(SDL_HAPTIC_ENABLED_BY_DEFAULT OFF)
+    set(SDL_SENSOR_ENABLED_BY_DEFAULT OFF)
+    set(SDL_SHARED_ENABLED_BY_DEFAULT ON)
+    add_subdirectory(SDL EXCLUDE_FROM_ALL)
+endif()
+
 # SoundTouch
 add_subdirectory(soundtouch)
 # The SoundTouch target doesn't export the necessary include paths as properties by default
