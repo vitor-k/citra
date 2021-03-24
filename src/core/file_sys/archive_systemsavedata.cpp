@@ -54,7 +54,8 @@ Path ConstructSystemSaveDataBinaryPath(u32 high, u32 low) {
 
 ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_SystemSaveData::Open(const Path& path,
                                                                                u64 program_id) {
-    const std::string fullpath = GetSystemSaveDataPath(GetSystemSaveDataContainerPath(ArchiveFactory::nand_directory), path);
+    const std::string fullpath =
+        GetSystemSaveDataPath(GetSystemSaveDataContainerPath(ArchiveFactory::nand_directory), path);
     std::string relative_path =
         GetSystemSaveDataPath(GetSystemSaveDataContainerPath("nand/"), path);
     if (!FileUtil::Exists(fullpath)) {
@@ -68,7 +69,8 @@ ResultVal<std::unique_ptr<ArchiveBackend>> ArchiveFactory_SystemSaveData::Open(c
 ResultCode ArchiveFactory_SystemSaveData::Format(const Path& path,
                                                  const FileSys::ArchiveFormatInfo& format_info,
                                                  u64 program_id) {
-    std::string fullpath = GetSystemSaveDataPath(GetSystemSaveDataContainerPath(ArchiveFactory::nand_directory), path);
+    std::string fullpath =
+        GetSystemSaveDataPath(GetSystemSaveDataContainerPath(ArchiveFactory::nand_directory), path);
     FileUtil::DeleteDirRecursively(fullpath);
     FileUtil::CreateFullPath(fullpath);
     return RESULT_SUCCESS;

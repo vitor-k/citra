@@ -63,7 +63,8 @@ ResultVal<std::unique_ptr<FileBackend>> SaveDataArchive::OpenFile(const Path& pa
 
     switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                     ArchiveBackend::base_path + mount_point);
         return ERROR_FILE_NOT_FOUND;
     case PathParser::PathNotFound:
         LOG_ERROR(Service_FS, "Path not found {}", full_path);
@@ -109,7 +110,8 @@ ResultCode SaveDataArchive::DeleteFile(const Path& path) const {
 
     switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                     ArchiveBackend::base_path + mount_point);
         return ERROR_FILE_NOT_FOUND;
     case PathParser::PathNotFound:
         LOG_ERROR(Service_FS, "Path not found {}", full_path);
@@ -147,8 +149,10 @@ ResultCode SaveDataArchive::RenameFile(const Path& src_path, const Path& dest_pa
         return ERROR_INVALID_PATH;
     }
 
-    const auto src_path_full = path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
-    const auto dest_path_full = path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto src_path_full =
+        path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto dest_path_full =
+        path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
     if (FileUtil::Rename(src_path_full, dest_path_full)) {
         return RESULT_SUCCESS;
@@ -200,13 +204,14 @@ static ResultCode DeleteDirectoryHelper(const Path& path, const std::string& mou
 }
 
 ResultCode SaveDataArchive::DeleteDirectory(const Path& path) const {
-    return DeleteDirectoryHelper(path, ArchiveBackend::base_path + mount_point, FileUtil::DeleteDir);
+    return DeleteDirectoryHelper(path, ArchiveBackend::base_path + mount_point,
+                                 FileUtil::DeleteDir);
 }
 
 ResultCode SaveDataArchive::DeleteDirectoryRecursively(const Path& path) const {
-    return DeleteDirectoryHelper(path, ArchiveBackend::base_path + mount_point, [](const std::string& p) {
-        return FileUtil::DeleteDirRecursively(p);
-    });
+    return DeleteDirectoryHelper(
+        path, ArchiveBackend::base_path + mount_point,
+        [](const std::string& p) { return FileUtil::DeleteDirRecursively(p); });
 }
 
 ResultCode SaveDataArchive::CreateFile(const FileSys::Path& path, u64 size) const {
@@ -221,7 +226,8 @@ ResultCode SaveDataArchive::CreateFile(const FileSys::Path& path, u64 size) cons
 
     switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                     ArchiveBackend::base_path + mount_point);
         return ERROR_FILE_NOT_FOUND;
     case PathParser::PathNotFound:
         LOG_ERROR(Service_FS, "Path not found {}", full_path);
@@ -266,7 +272,8 @@ ResultCode SaveDataArchive::CreateDirectory(const Path& path) const {
 
     switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                     ArchiveBackend::base_path + mount_point);
         return ERROR_FILE_NOT_FOUND;
     case PathParser::PathNotFound:
         LOG_ERROR(Service_FS, "Path not found {}", full_path);
@@ -308,8 +315,10 @@ ResultCode SaveDataArchive::RenameDirectory(const Path& src_path, const Path& de
         return ERROR_INVALID_PATH;
     }
 
-    const auto src_path_full = path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
-    const auto dest_path_full = path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto src_path_full =
+        path_parser_src.BuildHostPath(ArchiveBackend::base_path + mount_point);
+    const auto dest_path_full =
+        path_parser_dest.BuildHostPath(ArchiveBackend::base_path + mount_point);
 
     if (FileUtil::Rename(src_path_full, dest_path_full)) {
         return RESULT_SUCCESS;
@@ -334,7 +343,8 @@ ResultVal<std::unique_ptr<DirectoryBackend>> SaveDataArchive::OpenDirectory(
 
     switch (path_parser.GetHostStatus(ArchiveBackend::base_path + mount_point)) {
     case PathParser::InvalidMountPoint:
-        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}", ArchiveBackend::base_path + mount_point);
+        LOG_CRITICAL(Service_FS, "(unreachable) Invalid mount point {}",
+                     ArchiveBackend::base_path + mount_point);
         return ERROR_FILE_NOT_FOUND;
     case PathParser::PathNotFound:
     case PathParser::NotFound:

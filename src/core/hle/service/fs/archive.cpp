@@ -362,8 +362,7 @@ void ArchiveManager::RegisterArchiveTypes() {
     auto savedatacheck_factory = std::make_unique<FileSys::ArchiveFactory_NCCH>();
     RegisterArchiveType(std::move(savedatacheck_factory), ArchiveIdCode::NCCH);
 
-    auto systemsavedata_factory =
-        std::make_unique<FileSys::ArchiveFactory_SystemSaveData>();
+    auto systemsavedata_factory = std::make_unique<FileSys::ArchiveFactory_SystemSaveData>();
     RegisterArchiveType(std::move(systemsavedata_factory), ArchiveIdCode::SystemSaveData);
 
     auto selfncch_factory = std::make_unique<FileSys::ArchiveFactory_SelfNCCH>();
