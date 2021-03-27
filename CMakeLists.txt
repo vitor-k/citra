@@ -138,7 +138,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 if (ENABLE_SDL2)
-    add_compile_definitions(SDL_DISABLE_IMMINTRIN_H) #for mac M1
     if (CITRA_USE_COMPILED_SDL2)
         set(SDL2_FOUND YES)
     else()
