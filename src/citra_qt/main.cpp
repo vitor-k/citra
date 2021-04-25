@@ -1724,7 +1724,8 @@ void GMainWindow::ChangeScreenSize() {
         // not resize properly, when in 1x.
         // TODO (vitor-k): repro and report to Qt and/or find a
         // better workaround
-        QTimer::singleShot(100, this, &GMainWindow::ResizeScreen);
+        auto_resized = true;
+        QTimer::singleShot(50, this, &GMainWindow::ResizeScreen);
     }
 }
 
