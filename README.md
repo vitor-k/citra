@@ -16,7 +16,21 @@ Check out our [website](https://citra-emu.org/)!
 
 Need help? Check out our [asking for help](https://citra-emu.org/help/reference/asking/) guide.
 
-For development discussion, please join us on our [Discord server](https://citra-emu.org/discord/) or at #citra-dev on freenode.
+For development discussion, please join us on our [Discord server](https://citra-emu.org/discord/) or at #citra-dev on libera.
+
+### Releases
+
+Citra has two main release builds: Nightly and Canary.
+
+The [Nightly](https://github.com/citra-emu/citra-nightly) build is based on the master branch, and can be expected to have reviewed and tested features.
+
+The [Canary](https://github.com/citra-emu/citra-canary) build has additional features that are under testing, and not yet merged onto the master branch.
+
+Both builds can be installed with the installer provided on the [website](https://citra-emu.org/download/), but those looking for specific versions or standalone releases can find them on the release tabs of the [Nightly](https://github.com/citra-emu/citra-nightly/releases) and [Canary](https://github.com/citra-emu/citra-canary/releases) repositories.
+
+The android release can be found on [Google Play](https://play.google.com/store/apps/details?id=org.citra.citra_emu), and may also be downloaded as an .apk from the [release tab](https://github.com/citra-emu/citra-android/releases) from the [android repository](https://github.com/citra-emu/citra-android).
+
+A flatpak for Citra can be found on [Flathub](https://flathub.org/apps/details/org.citra_emu.citra). More details on how that version is build can be found on [the flathub repository](https://github.com/flathub/org.citra_emu.citra).
 
 ### Development
 
